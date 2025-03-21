@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  blog-api:
+    image: blog-api
+    container_name: blog-api
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: secret
+      DB_NAME: blog
+      DB_PORT: 5432
+    restart: on-failure
+    networks:
+      - blog-network
+
+  db:
+    image: postgres:15
+    container_name: blog-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: blog
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - blog-network
+
+volumes:
+  db-data:
+
+networks:
+  blog-network:
+    driver: bridge
