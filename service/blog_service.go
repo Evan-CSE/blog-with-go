@@ -6,11 +6,11 @@ import (
 )
 
 type IBlogService interface {
-	CreateBlog(blog *model.Blog) error
-	GetAllBlogs() ([]model.Blog, error)
-	GetBlogById(id int) (model.Blog, error)
-	UpdateBlog(blog *model.Blog) error
-	DeleteBlog(blog *model.Blog) error
+	CreateBlog(blog *model.Blog) model.Result[model.Blog]
+	GetAllBlogs() model.Result[[]model.Blog]
+	GetBlogById(id int) model.Result[model.Blog]
+	UpdateBlog(blog *model.Blog) model.Result[model.Blog]
+	DeleteBlog(blog *model.Blog) model.Result[model.Blog]
 }
 
 func NewBlogService(repo repository.IBlogRepository) IBlogService {
@@ -21,22 +21,27 @@ type BlogService struct {
 	repo repository.IBlogRepository
 }
 
-func (s *BlogService) CreateBlog(blog *model.Blog) error {
-	return s.repo.CreateBlog(blog)
+func (s *BlogService) CreateBlog(blog *model.Blog) model.Result[model.Blog] {
+	result := s.repo.CreateBlog(blog)
+	return result
 }
 
-func (s *BlogService) GetAllBlogs() ([]model.Blog, error) {
-	return s.repo.GetAllBlogs()
+func (s *BlogService) GetAllBlogs() model.Result[[]model.Blog] {
+	result := s.repo.GetAllBlogs()
+	return result
 }
 
-func (s *BlogService) GetBlogById(id int) (model.Blog, error) {
-	return s.repo.GetBlogById(id)
+func (s *BlogService) GetBlogById(id int) model.Result[model.Blog] {
+	result := s.repo.GetBlogById(id)
+	return result
 }
 
-func (s *BlogService) UpdateBlog(blog *model.Blog) error {
-	return s.repo.UpdateBlog(blog)
+func (s *BlogService) UpdateBlog(blog *model.Blog) model.Result[model.Blog] {
+	result := s.repo.UpdateBlog(blog)
+	return result
 }
 
-func (s *BlogService) DeleteBlog(blog *model.Blog) error {
-	return s.repo.DeleteBlog(blog)
+func (s *BlogService) DeleteBlog(blog *model.Blog) model.Result[model.Blog] {
+	result := s.repo.DeleteBlog(blog)
+	return result
 }

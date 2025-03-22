@@ -7,11 +7,11 @@ import (
 )
 
 type IBlogRepository interface {
-	CreateBlog(blog *model.Blog) error
-	GetAllBlogs() ([]model.Blog, error)
-	GetBlogById(id int) (model.Blog, error)
-	UpdateBlog(blog *model.Blog) error
-	DeleteBlog(blog *model.Blog) error
+	CreateBlog(blog *model.Blog) model.Result[model.Blog]
+	GetAllBlogs() model.Result[[]model.Blog]
+	GetBlogById(id int) model.Result[model.Blog]
+	UpdateBlog(blog *model.Blog) model.Result[model.Blog]
+	DeleteBlog(blog *model.Blog) model.Result[model.Blog]
 }
 
 type BlogRepository struct {
@@ -22,26 +22,39 @@ func NewBlogRepository(db *gorm.DB) IBlogRepository {
 	return &BlogRepository{db: db}
 }
 
-func (r *BlogRepository) CreateBlog(blog *model.Blog) error {
-	return r.db.Create(blog).Error
+func (r *BlogRepository) CreateBlog(blog *model.Blog) model.Result[model.Blog] {
+	if err := r.db.Create(blog).Error; err != nil {
+		return *model.Failure[model.Blog](err.Error(), "")
+	}
+	return *model.Success(*blog)
 }
 
-func (r *BlogRepository) GetAllBlogs() ([]model.Blog, error) {
+func (r *BlogRepository) GetAllBlogs() model.Result[[]model.Blog] {
 	var blogs []model.Blog
-	err := r.db.Find(&blogs).Error
-	return blogs, err
+	if err := r.db.Find(&blogs).Error; err != nil {
+		return *model.Failure[[]model.Blog](err.Error(), "")
+	}
+	return *model.Success(blogs)
 }
 
-func (r *BlogRepository) GetBlogById(id int) (model.Blog, error) {
+func (r *BlogRepository) GetBlogById(id int) model.Result[model.Blog] {
 	var blog model.Blog
-	err := r.db.First(&blog, id).Error
-	return blog, err
+	if err := r.db.First(&blog, id).Error; err != nil {
+		return *model.Failure[model.Blog](err.Error(), "")
+	}
+	return *model.Success(blog)
 }
 
-func (r *BlogRepository) UpdateBlog(blog *model.Blog) error {
-	return r.db.Save(blog).Error
+func (r *BlogRepository) UpdateBlog(blog *model.Blog) model.Result[model.Blog] {
+	if err := r.db.Save(blog).Error; err != nil {
+		return *model.Failure[model.Blog](err.Error(), "")
+	}
+	return *model.Success(*blog)
 }
 
-func (r *BlogRepository) DeleteBlog(blog *model.Blog) error {
-	return r.db.Delete(blog).Error
+func (r *BlogRepository) DeleteBlog(blog *model.Blog) model.Result[model.Blog] {
+	if err := r.db.Delete(blog).Error; err != nil {
+		return *model.Failure[model.Blog](err.Error(), "")
+	}
+	return *model.Success(*blog)
 }
